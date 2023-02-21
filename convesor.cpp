@@ -56,6 +56,8 @@ map<string, string> tipoInstrucaoMap = {
 	{"jr"  , "DIR"}
 };
 
+map<string, unsigned short> labels;
+
 
 void tipoAritmeticaLogica(bitset<32> &linhaB, string linha){
 	size_t separador = linha.find(',');
@@ -129,48 +131,120 @@ void tipoMemoria(bitset<32> &linhaB, string linha){ // sw, lw
 	cout << linhaB << endl;
 }
 
-// void tipoDesvioCondicional(bitset<32> &linhaB, string linha){ // beq, bne, bge
-	
-//     cout << linhaB << endl;
-// }
+void tipoDesvioCondicional(bitset<32> &linhaB, string linha, unsigned short pc){ // beq, bne, bge
+	size_t separador = linha.find(',');
+	int reg = stoi(linha.substr(1, separador-1));
+	bitset<32> rs(reg);
+	linha = linha.substr(separador+1);
 
-// void tipoDesvioIncondicional(bitset<32> &linhaB, string linha){ // j, jr
-	
-//     cout << linhaB << endl;
-// }
+	separador = linha.find(',');
+	reg = stoi(linha.substr(1, separador-1));
+	bitset<32> rt(reg);
+	linha = linha.substr(separador+1);
 
-bool converter(){
+	reg = labels[linha]; // add, sub, ...
+	reg -= pc;
+	bitset<32> label(reg);
+
+	rs <<= 21;
+	rt <<= 16;
+	label >>= 2;
+	for(int i=16; i<32; i++)
+		label.reset(i);
+	linhaB = linhaB | rs;
+	linhaB = linhaB | rt;
+	linhaB = linhaB | label;
+	
+	cout << linhaB << endl;
+}
+
+void tipoDesvioIncondicional(bitset<32> &linhaB, string linha){ // j, jr
+	int reg = labels[linha];
+	bitset<32> label(reg);
+	
+	label >>= 2;
+	linhaB = linhaB | label;
+	
+    cout << linhaB << endl;
+}
+
+void mapearLabels(){
+	ifstream txt("programa.txt");
+
+	if(txt){
+		string linha;
+		unsigned short pc = 0;
+
+		while(getline(txt, linha)){
+			size_t separador = linha.find(' ');
+			string label = linha.substr(0, separador); // add, sub, ...
+			
+			if(label.back() == ':'){
+				label = label.substr(0, label.size()-1);
+
+				linha.erase(remove(linha.begin(), linha.end(), ' '), linha.end());
+
+				labels[label] = pc;
+
+				if(linha.size() <= label.size()+1)
+					pc -= 4;
+			}
+			pc += 4;
+		}
+
+		txt.close();
+	}
+}
+
+bool converter(){ // já considera labels no código
+
+	mapearLabels();
+
 	ifstream txt("programa.txt");
 	ofstream bin("programa.bin", ios::binary);
 
 	if(txt and bin){
 		string linha;
+		unsigned short pc = 0;
 
 		while(getline(txt, linha)){
-			cout << linha << endl;
+			cout << pc << " -> " << linha << endl;
 
 			size_t separador = linha.find(' ');
 			string funcao = linha.substr(0, separador); // add, sub, ...
+
+			if(funcao.back() == ':'){
+				if(linha.size() > funcao.size()+1)
+					linha = linha.substr(separador+1);
+				else
+					continue;
+			}
+
+			separador = linha.find(' ');
+			funcao = linha.substr(0, separador); // add, sub, ...
 			linha = linha.substr(separador+1);
 			linha.erase(remove(linha.begin(), linha.end(), ' '), linha.end());
 
 			string aux = opcodeMap[funcao];
 			bitset<32> linhaB(aux);
 
+			cout << pc << " -> ";
 			if(tipoInstrucaoMap[funcao] == "AL")
 				tipoAritmeticaLogica(linhaB, linha);
 			else if(tipoInstrucaoMap[funcao] == "IME")
 				tipoImediata(linhaB, linha);
 			else if(tipoInstrucaoMap[funcao] == "MEM")
 				tipoMemoria(linhaB, linha);
-			// else if(tipoInstrucaoMap[funcao] == "DC")
-			//     tipoDesvioCondicional(linhaB, linha);
-			// else if(tipoInstrucaoMap[funcao] == "DI")
-			//     tipoDesvioIncondicional(linhaB, linha);
+			else if(tipoInstrucaoMap[funcao] == "DC")
+			    tipoDesvioCondicional(linhaB, linha, pc);
+			else if(tipoInstrucaoMap[funcao] == "DI")
+			    tipoDesvioIncondicional(linhaB, linha);
 			else 
 				cout << "funcao nao reconhecida" << endl;
 			
-			// bin.write((const char *) &linhaB, sizeof(bitset<32>));
+			bin.write((const char *) &linhaB, sizeof(bitset<32>));
+
+			pc += 4;
 		}
 
 		txt.close();
@@ -182,7 +256,7 @@ bool converter(){
 }
 
 int main(){
-	
+
 	if(converter())
 		cout << "Arquivo decodificado" << endl;
 	else
