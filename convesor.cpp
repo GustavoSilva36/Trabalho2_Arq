@@ -229,6 +229,9 @@ bool converter(){ // já considera labels no código
 			bitset<32> linhaB(aux);
 
 			cout << pc << " -> ";
+
+			pc += 4;
+			
 			if(tipoInstrucaoMap[funcao] == "AL")
 				tipoAritmeticaLogica(linhaB, linha);
 			else if(tipoInstrucaoMap[funcao] == "IME")
@@ -243,8 +246,6 @@ bool converter(){ // já considera labels no código
 				cout << "funcao nao reconhecida" << endl;
 			
 			bin.write((const char *) &linhaB, sizeof(bitset<32>));
-
-			pc += 4;
 		}
 
 		txt.close();

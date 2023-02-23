@@ -2,7 +2,17 @@
 #include <cmath>
 #include <bits/stdc++.h>
 
+#define _CABECALHO_H
+
 using namespace std;
+
+class Bit32 : public bitset<32> {
+	public:
+		void invert(){
+			this->flip();
+			cout << this << endl;
+		}
+};
 
 bitset<32> operator+(bitset<32> &b1, bitset<32> &b2){
 	bitset<32> result;
@@ -37,8 +47,7 @@ bitset<32> operator-(bitset<32> &b1, bitset<32> &b2){
 bitset<32> operator<(bitset<32> &b1, bitset<32> &b2){
 	bitset<32> aux = b1 - b2;
 	bitset<32> result;
-	if(aux[31] == 0)
-		result = bitset<32>(1);
+	result = bitset<32>(aux[31]);
 	return result;
 }
 
@@ -66,13 +75,18 @@ bitset<6> recorte6(bitset<32> linha, int inicio){
 	return retorno;
 }
 
-bitset<32> signalExtension(bitset<32> instrucao){
+bitset<32> signalExtension(bitset<16> endereco){
 	bitset<32> extendido;
 	for(int i=0; i<16; i++)
-		extendido.set(i, instrucao[i]);
+		extendido.set(i, endereco[i]);
 	for(int i=16; i<32; i++)
-		extendido.set(i, instrucao[15]);
+		extendido.set(i, endereco[15]);
 	return extendido;
+}
+
+int bitsetToInt(bitset<32> b){
+	int retorno = b.to_ulong();
+	return retorno;
 }
 
 class BancoRegistradores{
@@ -95,6 +109,7 @@ class BancoRegistradores{
             return registradores[endereco.to_ulong()];
         }
         void setRegistrador(bitset<5> endereco, bitset<32> valor){
+			if(endereco.to_ulong() != 0)
             registradores[endereco.to_ulong()] = valor;
         }
 };
