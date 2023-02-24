@@ -1,8 +1,12 @@
 #include <fstream>
-#include "execucao.cpp"
 #ifndef _CABECALHO_H
 	#include "cabecalho.hpp"
 #endif
+#include "instructionDecoder.cpp"
+#include "execucao.cpp"
+#include "memoria.cpp"
+#include "writeBack.cpp"
+
 
 bool IF(ifstream &programa, unsigned short &pc, bitset<32> &instrucao){
 	programa.seekg(pc, ios::beg);
@@ -17,37 +21,26 @@ bool IF(ifstream &programa, unsigned short &pc, bitset<32> &instrucao){
 int main(){
 	ifstream programa("programa.bin", ios::binary);
 	BancoRegistradores RB = BancoRegistradores();
-	// BancoMemoria MB = BancoMemoria();
-	unsigned short pc = 24;
+	BancoMemoria MB = BancoMemoria();
+	unsigned short pc = 0;
 	bitset<32> instrucao;
 
 
-	IF(programa, pc, instrucao);
+	while(IF(programa, pc, instrucao)){
 
-	// -------------------------------- teste EXE --------------------------------------
-	bitset<5> endereco1 = recorte5(instrucao, 21);
-	bitset<5> endereco2 = recorte5(instrucao, 16);
-	RB.setRegistrador(endereco1, bitset<32>(5));
-	RB.setRegistrador(endereco2, bitset<32>(5));
+		ID id = ID(recorte6(instrucao, 26), recorte5(instrucao, 21), recorte5(instrucao, 16), recorte5(instrucao, 11), RB);
+		
+		EXE exe = EXE(id.value_Rs, id.value_Rt, recorte16(instrucao, 0), recorte6(instrucao, 0),
+					id.retornoAlu, id.alu_src, id.branch, id.isBNE, id.jump, pc);
 
-	bitset<32> reg1 = RB.getRegistrador(endereco1);
-	bitset<32> reg2 = RB.getRegistrador(endereco2);
-	bitset<16> enderecoLabel = recorte16(instrucao, 0);
-	bitset<6> funct = recorte6(instrucao, 0);
-	bitset<2> ALUOp("01");
-	bool ALUSrc = false;
-	bool branch = true;
-	bool bne = false;
-	bool jump = false;
-	// -------------------------------- fim teste --------------------------------------
+		MEM mem = MEM(id.mem_read, id.mem_write, MB, exe.result, id.value_Rt);
 
-	cout << instrucao << endl;
-	cout << reg1 << endl;
-	cout << reg2 << endl;
+		WR(id.reg_write, id.mem_to_reg, id.Write_Adrr, RB, mem.mem_read_data, exe.result);
+
+		cout << "PC: " << pc << endl << "---------------------------------------" << endl;
+
+		system("pause");
+	}
 	
-	EXE exe = EXE(reg1, reg2, enderecoLabel, funct, ALUOp, ALUSrc, branch, bne, jump, pc);
-
-	cout << "PC: " << pc << endl;
-
 	return 0;
 }

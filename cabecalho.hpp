@@ -6,17 +6,9 @@
 
 using namespace std;
 
-class Bit32 : public bitset<32> {
-	public:
-		void invert(){
-			this->flip();
-			cout << this << endl;
-		}
-};
-
-bitset<32> operator+(bitset<32> &b1, bitset<32> &b2){
+bitset<32> operator+(bitset<32> b1, bitset<32> b2){
 	bitset<32> result;
-	bool vai1;
+	bool vai1 = 0;
 	for(int i=0; i<32; i++){
 		if(b1[i] and b2[i] and vai1){
 			result.set(i);
@@ -36,7 +28,7 @@ bitset<32> operator+(bitset<32> &b1, bitset<32> &b2){
 	return result;
 }
 
-bitset<32> operator-(bitset<32> &b1, bitset<32> &b2){
+bitset<32> operator-(bitset<32> b1, bitset<32> b2){
 	b2.flip();
 	bitset<32> aux(1);
 	b2 = b2 + aux;
@@ -44,7 +36,7 @@ bitset<32> operator-(bitset<32> &b1, bitset<32> &b2){
 	return result;
 }
 
-bitset<32> operator<(bitset<32> &b1, bitset<32> &b2){
+bitset<32> operator<(bitset<32> b1, bitset<32> b2){
 	bitset<32> aux = b1 - b2;
 	bitset<32> result;
 	result = bitset<32>(aux[31]);
@@ -110,7 +102,7 @@ class BancoRegistradores{
         }
         void setRegistrador(bitset<5> endereco, bitset<32> valor){
 			if(endereco.to_ulong() != 0)
-            registradores[endereco.to_ulong()] = valor;
+            	registradores[endereco.to_ulong()] = valor;
         }
 };
 

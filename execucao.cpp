@@ -1,4 +1,6 @@
-#include "cabecalho.hpp"
+#ifndef _CABECALHO_H
+	#include "cabecalho.hpp"
+#endif
 
 class EXE{
 	public:
@@ -37,6 +39,7 @@ EXE::EXE(bitset<32> reg1, bitset<32> reg2, bitset<16> enderecoLabel, bitset<6> f
 
 	if(jump){
 		endeExtended <<= 2;
+		cout << "Endereco do jump: " << bitsetToInt(endeExtended) << endl;
 		pc = endeExtended.to_ulong();
 	}
 
@@ -44,6 +47,7 @@ EXE::EXE(bitset<32> reg1, bitset<32> reg2, bitset<16> enderecoLabel, bitset<6> f
 	bool branchZero = bne ? !Zero : Zero;
 	if(branch and branchZero){
 		endeExtended <<= 2;
+		cout << "Calculo do branch: " << bitsetToInt(endeExtended) << endl;
 		pc = pc + bitsetToInt(endeExtended);
 	}
 
@@ -51,16 +55,30 @@ EXE::EXE(bitset<32> reg1, bitset<32> reg2, bitset<16> enderecoLabel, bitset<6> f
 }
 
 void EXE::ALU(bitset<32> reg1, bitset<32> reg2, bitset<3> ALUCtr){
-	if(ALUCtr == bitset<3>("000"))
+	if(ALUCtr == bitset<3>("000")){
 		result = reg1 & reg2;
-	else if(ALUCtr == bitset<3>("001"))
+		cout << "And" << endl;
+	}
+	else if(ALUCtr == bitset<3>("001")){
 		result = reg1 | reg2;
-	else if(ALUCtr == bitset<3>("010"))
+		cout << "Or" << endl;
+	}
+	else if(ALUCtr == bitset<3>("010")){
 		result = reg1 + reg2;
-	else if(ALUCtr == bitset<3>("110"))
+		cout << "Soma" << endl;
+		cout << bitsetToInt(reg1) << " + " << bitsetToInt(reg2) << " = " << bitsetToInt(result) << endl;
+	}
+	else if(ALUCtr == bitset<3>("110")){
 		result = reg1 - reg2;
-	else if(ALUCtr == bitset<3>("111"))
+		cout << "Subtracao" << endl;
+		cout << reg2 << endl;
+		cout << bitsetToInt(reg1) << " - " << bitsetToInt(reg2) << " = " << bitsetToInt(result) << endl;
+	}
+	else if(ALUCtr == bitset<3>("111")){
 		result = reg1 < reg2;
+		cout << "Menor que" << endl;
+		cout << bitsetToInt(reg1) << " < " << bitsetToInt(reg2) << endl;
+	}
 }
 
 bitset<3> EXE::ALUControl(bitset<2> ALUOp, bitset<6> funct){
