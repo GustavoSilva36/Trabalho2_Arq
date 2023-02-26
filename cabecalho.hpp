@@ -6,6 +6,17 @@
 
 using namespace std;
 
+
+int bitsetToInt(bitset<32> b){
+	int retorno = b.to_ulong();
+	return retorno;
+}
+
+int bitsetToInt(bitset<5> b){
+	int retorno = b.to_ulong();
+	return retorno;
+}
+
 bitset<32> operator+(bitset<32> b1, bitset<32> b2){
 	bitset<32> result;
 	bool vai1 = 0;
@@ -43,6 +54,18 @@ bitset<32> operator<(bitset<32> b1, bitset<32> b2){
 	return result;
 }
 
+bitset<32> operator*(bitset<32> b1, bitset<32> b2){
+	int aux = bitsetToInt(b1) * bitsetToInt(b2);
+	bitset<32> result(aux);
+	return result;
+}
+
+bitset<32> operator/(bitset<32> b1, bitset<32> b2){
+	int aux = bitsetToInt(b1) / bitsetToInt(b2);
+	bitset<32> result(aux);
+	return result;
+}
+
 bitset<16> recorte16(bitset<32> linha, int inicio){
 	bitset<16> retorno;
 	for(int i=0; i<16; i++)
@@ -76,10 +99,7 @@ bitset<32> signalExtension(bitset<16> endereco){
 	return extendido;
 }
 
-int bitsetToInt(bitset<32> b){
-	int retorno = b.to_ulong();
-	return retorno;
-}
+
 
 class BancoRegistradores{
     private:

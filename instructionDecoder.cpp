@@ -8,7 +8,7 @@ struct ControlUnit
     bool jump = false;
     bitset<2> branch;
     bool mem_read = false;
-    bool mem_reg = false;
+    bool mem_to_reg = false;
     bool mem_write = false;
     bool alu_src = false;
     bool reg_write = false;
@@ -21,7 +21,7 @@ struct ControlUnit
         cout << "jump: " << jump << endl
              << "branch: " << branch << endl
              << "mem_read: " << mem_read << endl
-             << "mem_reg: " << mem_reg << endl
+             << "mem_to_reg: " << mem_to_reg << endl
              << "mem_write: " << mem_write << endl
              << "alu_src: " << alu_src << endl
              << "reg_write: " << reg_write << endl
@@ -72,7 +72,7 @@ void ControlUnit::setControlUnit(bitset<6> opcode) // retirei a funct por enquan
     else if (opcode == bitset<6>("100011"))
     {
         mem_read = true;
-        mem_reg = true;
+        mem_to_reg = true;
         alu_src = true;
         reg_write = true;
 

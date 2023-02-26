@@ -30,8 +30,8 @@ int main(){
 
 		ID id = ID(recorte6(instrucao, 26), recorte5(instrucao, 21), recorte5(instrucao, 16), recorte5(instrucao, 11), RB);
 		
-		EXE exe = EXE(id.value_Rs, id.value_Rt, recorte16(instrucao, 0), recorte6(instrucao, 0),
-					id.retornoAlu, id.alu_src, id.branch, id.isBNE, id.jump, pc);
+		EXE exe = EXE(id.value_Rs, id.value_Rt, recorte16(instrucao, 0), recorte6(instrucao, 0), recorte5(instrucao, 6),
+					id.retornoAlu, id.alu_src, id.branch, id.jump, pc);
 
 		MEM mem = MEM(id.mem_read, id.mem_write, MB, exe.result, id.value_Rt);
 
