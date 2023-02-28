@@ -20,9 +20,7 @@ class EXE{
 		void mostrarValores(){
 			cout << "Overflow: " << ovf << endl
 				 << "Flag de zero: " << Zero << endl
-				 << "Endereco extendido: " << endeExtended << endl
-				 << "Resultado das operacoes: " << result << endl
-				 << "Resultado inteiro: " << bitsetToInt(result) << endl;
+				 << "Endereco extendido: " << endeExtended << endl;
 		}
 
 };
@@ -62,6 +60,7 @@ EXE::EXE(bitset<32> reg1, bitset<32> reg2, bitset<16> enderecoLabel, bitset<6> f
 }
 
 void EXE::ALU(bitset<32> reg1, bitset<32> reg2, bitset<5> shamt, bitset<4> ALUCtr){
+	overflow = false;
 	if(ALUCtr == bitset<4>("0000")){ // and
 		result = reg1 & reg2;
 		cout << "And" << endl;
@@ -94,26 +93,28 @@ void EXE::ALU(bitset<32> reg1, bitset<32> reg2, bitset<5> shamt, bitset<4> ALUCt
 	}
 	else if(ALUCtr == bitset<4>("0110")){ // sll
 		cout << "Shift Left Logical" << endl;
-		cout << bitsetToInt(reg2) << " << " << bitsetToInt(shamt) << endl;
+		cout << reg2 << " << " << bitsetToInt(shamt) << endl;
 		reg2 <<= bitsetToInt(shamt);
 		result = reg2;
 	}
 	else if(ALUCtr == bitset<4>("0111")){ // srl
 		cout << "Shift Right Logical" << endl;
-		cout << bitsetToInt(reg2) << " >> " << bitsetToInt(shamt) << endl;
+		cout << reg2 << " >> " << bitsetToInt(shamt) << endl;
 		reg2 >>= bitsetToInt(shamt);
 		result = reg2;
 	}
 	else if(ALUCtr == bitset<4>("1000")){ // mul
 		result = reg1 * reg2;
 		cout << "Multiplicacao" << endl;
-		cout << bitsetToInt(reg1) << " * " << bitsetToInt(reg2) << endl;
+		cout << bitsetToInt(reg1) << " * " << bitsetToInt(reg2) << " = " << bitsetToInt(result) << endl;
 	}
 	else if(ALUCtr == bitset<4>("1001")){ // div
 		result = reg1 / reg2;
 		cout << "Divisao Inteira" << endl;
-		cout << bitsetToInt(reg1) << " / " << bitsetToInt(reg2) << endl;
+		cout << bitsetToInt(reg1) << " / " << bitsetToInt(reg2) << " = " << bitsetToInt(result) << endl;
 	}
+
+	ovf = overflow;
 }
 
 bitset<4> EXE::ALUControl(bitset<2> ALUOp, bitset<6> funct){

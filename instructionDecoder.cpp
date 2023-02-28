@@ -13,7 +13,7 @@ struct ControlUnit
     bool alu_src = false;
     bool reg_write = false;
     bool reg_dst = false;
-    bitset<2> retornoAlu;
+    bitset<2> alu_op;
 
     void setControlUnit(bitset<6> opcode); // retirei a funct por enquanto
     void imprimirID()
@@ -26,7 +26,7 @@ struct ControlUnit
              << "alu_src: " << alu_src << endl
              << "reg_write: " << reg_write << endl
              << "reg_dst: " << reg_dst << endl
-             << "retornoAlu: " << retornoAlu << endl;
+             << "alu_op: " << alu_op << endl;
     }
 };
 
@@ -39,7 +39,7 @@ void ControlUnit::setControlUnit(bitset<6> opcode) // retirei a funct por enquan
         reg_write = true;
         reg_dst = true;
         // retorno pra AlUCtr
-        retornoAlu = bitset<2>("10");
+        alu_op = bitset<2>("10");
         imprimirID();
     }
 
@@ -56,7 +56,7 @@ void ControlUnit::setControlUnit(bitset<6> opcode) // retirei a funct por enquan
             branch = bitset<2>("01");
         }
 
-        retornoAlu = bitset<2>("01");
+        alu_op = bitset<2>("01");
 
         imprimirID();
     }
@@ -76,7 +76,7 @@ void ControlUnit::setControlUnit(bitset<6> opcode) // retirei a funct por enquan
         alu_src = true;
         reg_write = true;
 
-        retornoAlu = bitset<2>("00");
+        alu_op = bitset<2>("00");
         imprimirID();
     }
 
@@ -85,7 +85,7 @@ void ControlUnit::setControlUnit(bitset<6> opcode) // retirei a funct por enquan
         mem_write = true;
         alu_src = true;
 
-        retornoAlu = bitset<2>("00");
+        alu_op = bitset<2>("00");
         imprimirID();
     }
 
@@ -95,7 +95,7 @@ void ControlUnit::setControlUnit(bitset<6> opcode) // retirei a funct por enquan
         alu_src = true;
         reg_write = true;
 
-        retornoAlu = bitset<2>("00");
+        alu_op = bitset<2>("00");
         imprimirID();
     }
 }

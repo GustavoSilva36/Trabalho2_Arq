@@ -6,6 +6,7 @@
 
 using namespace std;
 
+bool overflow = false;
 
 int bitsetToInt(bitset<32> b){
 	int retorno = b.to_ulong();
@@ -36,6 +37,12 @@ bitset<32> operator+(bitset<32> b1, bitset<32> b2){
 			vai1 = 0;
 		}
 	}
+
+	if((b1[31] == b2[31]) and (b2[31] != result[31]))
+		overflow = true;
+	else
+		overflow = false;
+
 	return result;
 }
 
@@ -57,6 +64,14 @@ bitset<32> operator<(bitset<32> b1, bitset<32> b2){
 bitset<32> operator*(bitset<32> b1, bitset<32> b2){
 	int aux = bitsetToInt(b1) * bitsetToInt(b2);
 	bitset<32> result(aux);
+
+	if((b1[31] == b2[31]) and (result[31] == 1))
+		overflow = true;
+	else if((b1[31] != b2[31]) and (result[31] == 0))
+		overflow = true;
+	else
+		overflow = false;
+	
 	return result;
 }
 
